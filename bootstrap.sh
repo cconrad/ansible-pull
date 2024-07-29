@@ -21,22 +21,35 @@ fi
 
 case $OS in
     arch)
-        if pacman -Q git >/dev/null 2>/dev/null ;
-        then
+        if pacman -Q git >/dev/null 2>/dev/null; then
             GIT_INSTALLED=1
         else
-            if pacman -Sy --noconfirm git ;
-            then
+            if pacman -Sy --noconfirm git; then
                 GIT_INSTALLED=1
             fi
         fi
 
-        if pacman -Q ansible-core >/dev/null 2>/dev/null ;
-        then
+        if pacman -Q ansible-core >/dev/null 2>/dev/null; then
             ANSIBLE_INSTALLED=1
         else
-            if pacman -Sy --noconfirm ansible-core ;
-            then
+            if pacman -Sy --noconfirm ansible-core; then
+                ANSIBLE_INSTALLED=1
+            fi
+        fi
+        ;;
+    debian|ubuntu)
+        if dpkg-query -W -f='${Status}' git 2>/dev/null | grep -q "install ok installed"; then
+            GIT_INSTALLED=1
+        else
+            if apt update && apt install -y git; then
+                GIT_INSTALLED=1
+            fi
+        fi
+
+        if dpkg-query -W -f='${Status}' ansible 2>/dev/null | grep -q "install ok installed"; then
+            ANSIBLE_INSTALLED=1
+        else
+            if apt update && apt install -y ansible; then
                 ANSIBLE_INSTALLED=1
             fi
         fi
