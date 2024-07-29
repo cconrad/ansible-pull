@@ -21,10 +21,10 @@ fi
 
 case $OS in
     almalinux|centos|fedora|rhel|rocky)
-        if rpm -q git >/dev/null 2>/dev/null; then
+        if rpm -q git-core >/dev/null 2>/dev/null; then
             GIT_INSTALLED=1
         else
-            if dnf install -y git; then
+            if dnf install -y git-core; then
                 GIT_INSTALLED=1
             fi
         fi
