@@ -20,7 +20,7 @@ else
 fi
 
 case $OS in
-    almalinux|centos|fedora|rhel)
+    almalinux|centos|fedora|rhel|rocky)
         if rpm -q git >/dev/null 2>/dev/null; then
             GIT_INSTALLED=1
         else
