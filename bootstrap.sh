@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
 continue_as_user() {
     printf "\nPrerequisites installed. Now run:\nansible-pull -U https://github.com/cconrad/ansible-pull.git\n"
