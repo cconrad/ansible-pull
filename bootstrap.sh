@@ -20,6 +20,23 @@ else
 fi
 
 case $OS in
+    almalinux|centos|fedora|rhel)
+        if rpm -q git >/dev/null 2>/dev/null; then
+            GIT_INSTALLED=1
+        else
+            if dnf install -y git; then
+                GIT_INSTALLED=1
+            fi
+        fi
+
+        if rpm -q ansible-core >/dev/null 2>/dev/null; then
+            ANSIBLE_INSTALLED=1
+        else
+            if dnf install -y ansible-core; then
+                ANSIBLE_INSTALLED=1
+            fi
+        fi
+        ;;
     arch)
         if pacman -Q git >/dev/null 2>/dev/null; then
             GIT_INSTALLED=1
