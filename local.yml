@@ -1,0 +1,25 @@
+- hosts: all
+  tags: always
+  pre_tasks:
+    - name: pre-run | update package cache (arch)
+      tags: always
+      community.general.pacman:
+        update_cache: yes
+      when: ansible_facts['os_family'] == "Archlinux"
+
+    - name: pre-run | update package cache (debian, etc)
+      tags: always
+      ansible.builtin.apt:
+        update_cache: yes
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: pre-run | update package cache (redhat, etc)
+      tags: always
+      ansible.builtin.command:
+        argv:
+          - dnf
+          - check-update
+      register: pre_run_update_package_cache_redhat
+      failed_when: pre_run_update_package_cache_redhat.rc == 1
+      changed_when: pre_run_update_package_cache_redhat.rc == 100
+      when: ansible_facts['os_family'] == "RedHat"
