@@ -2,19 +2,19 @@
   hosts: all
   tags: always
   pre_tasks:
-    - name: Pre-run | Update package cache (Arch)
+    - name: "Pre-run : Update package cache (Arch)"
       tags: always
       community.general.pacman:
         update_cache: true
       when: ansible_facts['os_family'] == "Archlinux"
 
-    - name: Pre-run | Update package cache (Debian)
+    - name: "Pre-run : Update package cache (Debian)"
       tags: always
       ansible.builtin.apt:
         update_cache: true
       when: ansible_facts['os_family'] == "Debian"
 
-    - name: Pre-run | Update package cache (RedHat)
+    - name: "Pre-run : Update package cache (RedHat)"
       tags: always
       ansible.builtin.command:
         argv:
@@ -25,26 +25,29 @@
       changed_when: pre_run_update_package_cache_redhat.rc == 100
       when: ansible_facts['os_family'] == "RedHat"
 
+- name: Run base role
+  hosts: all
+  roles:
+    - base
+
 - name: End of run cleanup
   hosts: all
   tasks:
-    - name: Cleanup | Clean package cache (Arch)
+    - name: "Cleanup : Clean package cache (Arch)"
       tags: always
       ansible.builtin.shell:
-        cmd: |
-            set -o pipefail
-            yes | pacman -Scc
+        cmd: yes | pacman -Scc
       changed_when: false
       when: ansible_facts['os_family'] == "Archlinux"
 
-    - name: Cleanup | Clean package cache (Debian)
+    - name: "Cleanup : Clean package cache (Debian)"
       tags: always
       ansible.builtin.apt:
         autoclean: true
       changed_when: false
       when: ansible_facts['os_family'] == "Debian"
 
-    - name: Cleanup | Autoremove orphan packages (Debian)
+    - name: "Cleanup : Autoremove orphan packages (Debian)"
       tags: always
       ansible.builtin.apt:
         autoremove: true

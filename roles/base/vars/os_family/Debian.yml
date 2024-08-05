@@ -1,0 +1,7 @@
+base_packages:
+  jq: jq
+  mc: mc
+  pip: python3-pip
+  python: python3
+  rsync: rsync
+  tmux: tmux

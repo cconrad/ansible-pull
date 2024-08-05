@@ -1,0 +1,65 @@
+- name: Load distro-specific variables
+  ansible.builtin.include_vars:
+    file: 'os_family/{{ ansible_facts["os_family"] }}.yml'
+
+- name: Install packages (common)
+  ansible.builtin.package:
+    name:
+      - "{{ base_packages.jq }}"
+      - "{{ base_packages.mc }}"
+      - "{{ base_packages.python }}"
+      - '{{ base_packages.pip }}'
+      - "{{ base_packages.rsync }}"
+      - "{{ base_packages.tmux }}"
+    state: present
+
+- name: Install packages (Arch)
+  when: ansible_facts["os_family"] == "Archlinux"
+  ansible.builtin.package:
+    name:
+      - htop
+      - neovim
+      - tldr
+    state: present
+
+- name: Install packages (RedHat)
+  when: ansible_facts["os_family"] == "RedHat"
+  block:
+    - name: Install EPEL (RedHat)
+      ansible.builtin.package:
+        name: epel-release
+
+    - name: Install packages (RedHat)
+      ansible.builtin.package:
+        name:
+          - htop
+          - tldr
+        state: present
+
+- name: Install packages (Debian)
+  when: ansible_facts["os_family"] == "Debian"
+  ansible.builtin.package:
+    name:
+      - htop
+      - tldr
+    state: present
+
+- name: Install Neovim (Debian, RedHat)
+  when: ansible_facts["os_family"] in ["Debian", "RedHat"]
+  block:
+    - name: Create directory for Neovim (Debian, RedHat)
+      ansible.builtin.file:
+        dest: /opt/nvim
+        state: directory
+
+    - name: Download Neovim AppImage (Debian, RedHat)
+      ansible.builtin.get_url:
+        url: https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
+        dest: /opt/nvim/nvim
+        mode: 0777
+
+    - name: Create symlink to Neovim (Debian, RedHat)
+      ansible.builtin.file:
+        src: /opt/nvim/nvim
+        dest: /usr/local/bin/nvim
+        state: link
