@@ -30,6 +30,11 @@
   roles:
     - base
 
+- name: Run server role
+  hosts: server
+  roles:
+    - server
+
 - name: End of run cleanup
   hosts: all
   tasks:

@@ -1,0 +1,9 @@
+- name: Load distro-specific variables
+  ansible.builtin.include_vars:
+    file: 'os_family/{{ ansible_facts["os_family"] }}.yml'
+
+- name: Install packages (common)
+  ansible.builtin.package:
+    name:
+      - "{{ server_packages.podman }}"
+    state: present
