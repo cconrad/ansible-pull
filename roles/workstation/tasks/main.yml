@@ -1,0 +1,3 @@
+- name: Paru
+  ansible.builtin.import_tasks:
+    file: software/paru.yml

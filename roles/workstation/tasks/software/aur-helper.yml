@@ -1,0 +1,69 @@
+- name: Check if {{ package_name }} is installed
+  ansible.builtin.command:
+    cmd: which {{ package_provides }}
+  register: check_if_package_name_is_installed_arch
+  changed_when: check_if_package_name_is_installed_arch.rc != 0
+  failed_when: false
+
+- name: "{{ package_name }} is not installed"
+  when: check_if_package_name_is_installed_arch.rc != 0
+  block:
+    - name: Generate build user name
+      ansible.builtin.shell:
+        cmd: echo build$(date +%s)
+      register: build_user_name
+
+    - name: Store build user name
+      ansible.builtin.set_fact:
+        build_user_name: "{{ build_user_name.stdout }}"
+
+    - name: Evaluate build user expiration timestamp
+      ansible.builtin.shell:
+        cmd: echo $(( $(date +%s) + 3600 ))
+      register: build_user_expires
+
+    - name: Create build user {{ build_user_name }}
+      ansible.builtin.user:
+        expires: "{{ build_user_expires.stdout }}"
+        home: /home/{{ build_user_name }}
+        name: "{{ build_user_name }}"
+        password: '!'
+
+    - name: Install dependencies for {{ package_name }}
+      when: package_deps is defined and package_deps | length > 0
+      ansible.builtin.package:
+        name: "{{ package_deps }}"
+
+    - name: Clone {{ package_name }} repo
+      ansible.builtin.git:
+        accept_newhostkey: true
+        depth: 1
+        dest: "/home/{{ build_user_name }}/{{ package_name }}"
+        repo: "https://aur.archlinux.org/{{ package_name }}.git"
+      become: true
+      become_user: "{{ build_user_name }}"
+
+    - name: Build {{ package_name }}
+      ansible.builtin.command:
+        argv:
+          - makepkg
+          - --nodeps
+          - --noconfirm
+          - --force
+        chdir: "/home/{{ build_user_name }}/{{ package_name }}"
+      become: true
+      become_user: "{{ build_user_name }}"
+
+    - name: Install built {{ package_name }} package
+      ansible.builtin.shell:
+        cmd: "pacman -U --noconfirm /home/{{ build_user_name }}/{{ package_name }}/{{ package_name }}-*.pkg.tar.zst"
+
+    - name: Delete {{ package_name }} build environment
+      ansible.builtin.file:
+        path: "/home/{{ build_user_name }}/{{ package_name }}"
+        state: absent
+
+    - name: Remove build user {{ build_user_name }}
+      ansible.builtin.user:
+        name: "{{ build_user_name }}"
+        state: absent

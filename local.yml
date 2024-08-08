@@ -1,6 +1,5 @@
 - name: Update package caches
   hosts: all
-  tags: always
   pre_tasks:
     - name: "Pre-run : Update package cache (Arch)"
       tags: always
@@ -34,6 +33,11 @@
   hosts: server
   roles:
     - server
+
+- name: Run workstation role
+  hosts: workstation
+  roles:
+    - workstation
 
 - name: End of run cleanup
   hosts: all

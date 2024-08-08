@@ -1,0 +1,7 @@
+- name: Paru (Arch)
+  when: ansible_facts['os_family'] == "Archlinux"
+  ansible.builtin.include_tasks:
+    file: aur-helper.yml
+  vars:
+    package_name: paru-bin
+    package_provides: paru
