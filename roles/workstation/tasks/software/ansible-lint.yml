@@ -1,0 +1,17 @@
+- name:  Install ansible-lint (Arch, Debian)
+  when: ansible_facts["os_family"] in ["Archlinux", "Debian"]
+  ansible.builtin.package:
+    name: ansible-lint
+
+- name: Install ansible-lint (RedHat)
+  when: ansible_facts["os_family"] == "RedHat"
+  block:
+    - name: Ensure the CRB repo is enabled (RedHat)
+      when: ansible_facts["distribution"] != "Fedora"
+      community.general.dnf_config_manager:
+        name:
+          - crb
+
+    - name: Install ansible-lint (RedHat)
+      ansible.builtin.dnf:
+        name: python3-ansible-lint

@@ -1,7 +1,11 @@
-- name: Paru
-  ansible.builtin.import_tasks:
-    file: software/paru.yml
-
 - name: 1Password
   ansible.builtin.import_tasks:
     file: software/1password.yml
+
+- name: Ansible-lint
+  ansible.builtin.import_tasks:
+    file: software/ansible-lint.yml
+
+- name: Paru
+  ansible.builtin.import_tasks:
+    file: software/paru.yml
