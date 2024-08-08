@@ -6,6 +6,10 @@
   ansible.builtin.import_tasks:
     file: software/ansible-lint.yml
 
+- name: Dig
+  ansible.builtin.import_tasks:
+    file: software/dig.yml
+
 - name: Paru
   ansible.builtin.import_tasks:
     file: software/paru.yml

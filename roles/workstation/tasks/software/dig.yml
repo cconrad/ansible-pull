@@ -1,0 +1,17 @@
+- name: Install dig (Arch)
+  when: ansible_facts['os_family'] == "Archlinux"
+  ansible.builtin.package:
+    name: bind-tools
+    state: present
+
+- name: Install dig (Debian)
+  when: ansible_facts["os_family"] == "Debian"
+  ansible.builtin.package:
+    name: dnsutils
+    state: present
+
+- name: Install dig (RedHat)
+  when: ansible_facts["os_family"] == "RedHat"
+  ansible.builtin.package:
+    name: bind-utils
+    state: present
