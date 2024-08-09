@@ -6,6 +6,10 @@
   ansible.builtin.import_tasks:
     file: software/ansible-lint.yml
 
+- name: Bluez
+  ansible.builtin.import_tasks:
+    file: software/bluez.yml
+
 - name: Dig
   ansible.builtin.import_tasks:
     file: software/dig.yml

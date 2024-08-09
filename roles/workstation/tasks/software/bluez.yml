@@ -1,0 +1,44 @@
+- name: Install bluez (Arch, Debian, Fedora)
+  when: ansible_facts['os_family'] in ["Archlinux", "Debian"] or ansible_facts["distribution"] == "Fedora"
+  ansible.builtin.package:
+    name:
+      - bluez
+    state: present
+
+- name: Install bluez-utils (Arch)
+  when: ansible_facts['os_family'] == "Archlinux"
+  ansible.builtin.package:
+    name:
+      - bluez-utils
+    state: present
+
+- name: Install bluez via snap (RedHat)
+  when: ansible_facts["os_family"] == "RedHat" and ansible_facts["distribution"] != "Fedora"
+  block:
+    - name: Install snapd (RedHat)
+      ansible.builtin.package:
+        name:
+          - snapd
+        state: present
+    
+    - name: Start and enable snapd (RedHat)
+      ansible.builtin.systemd:
+        name: snapd.socket
+        enabled: yes
+        state: started
+
+    - name: Ensure snapd is ready (RedHat)
+      ansible.builtin.command:
+        argv:
+          - snap
+          - wait
+          - system
+          - seed.loaded
+        creates: /var/lib/snapd/system-key
+
+    - name: Install bluez via snap (RedHat)
+      ansible.builtin.command:
+        argv:
+          - snap
+          - install
+          - bluez
