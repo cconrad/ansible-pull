@@ -1,0 +1,5 @@
+- name: Install buildah (Arch, Debian, RedHat)
+  ansible.builtin.package:
+    name:
+      - buildah
+    state: present

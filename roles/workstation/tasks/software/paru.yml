@@ -1,4 +1,4 @@
-- name: Paru (Arch)
+- name: Install Paru (Arch)
   when: ansible_facts['os_family'] == "Archlinux"
   ansible.builtin.include_tasks:
     file: aur-helper.yml
